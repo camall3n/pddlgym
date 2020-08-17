@@ -14,7 +14,7 @@ import gym
 import imageio
 
 
-def run_random_agent_demo(env, outdir='/tmp', max_num_steps=10, fps=3, 
+def run_random_agent_demo(env, outdir='/tmp', max_num_steps=10, fps=3,
                           verbose=False, seed=None):
     if outdir is None:
         outdir = "/tmp/{}".format(env_cls.__name__)
@@ -36,7 +36,7 @@ def run_random_agent_demo(env, outdir='/tmp', max_num_steps=10, fps=3,
     for t in range(max_num_steps):
         if verbose:
             print("Obs:", obs)
-    
+
         action = env.action_space.sample(obs)
         if verbose:
             print("Act:", action)
@@ -82,19 +82,19 @@ def run_planning_demo(env, planner_name, outdir='/tmp', fps=3, verbose=False, se
     actions = []
     for s in plan:
         a = parse_plan_step(
-                s, 
-                env.domain.operators.values(), 
+                s,
+                env.domain.operators.values(),
                 env.action_predicates,
-                obs.objects, 
+                obs.objects,
                 operators_as_actions=env.operators_as_actions
             )
         actions.append(a)
-    
+
     tot_reward = 0.
     for action in actions:
         if verbose:
             print("Obs:", obs)
-    
+
         if verbose:
             print("Act:", action)
 
@@ -149,10 +149,10 @@ def run_probabilistic_planning_demo(env, planner_name, verbose=False, num_epi=20
         actions = []
         for s in plan:
             a = parse_plan_step(
-                    s, 
-                    env.domain.operators.values(), 
+                    s,
+                    env.domain.operators.values(),
                     env.action_predicates,
-                    obs.objects, 
+                    obs.objects,
                     operators_as_actions=env.operators_as_actions
                 )
             actions.append(a)
@@ -208,7 +208,7 @@ class VideoWrapper(gym.Wrapper):
         self.action_space = self.env.action_space
         self.observation_space = self.env.observation_space
 
-        self.out_path = self.out_path_prefix + str(self.reset_count) + \
+        self.out_path = self.out_path_prefix + (str(self.reset_count) if self.reset_count > 0 else '') + \
             '.' + self.out_path_suffix
         self.reset_count += 1
 
