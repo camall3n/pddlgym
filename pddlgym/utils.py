@@ -7,6 +7,7 @@ from PIL import Image
 from collections import defaultdict
 import contextlib
 import sys
+import time
 import itertools
 import numpy as np
 import os
@@ -188,6 +189,36 @@ def run_probabilistic_planning_demo(env, planner_name, verbose=False, num_epi=20
     return tot_reward
 
 
+def run_fps_benchmark(env, outdir='/tmp', max_num_steps=1000, fps=3,
+                          verbose=False, seed=None):
+    if outdir is None:
+        outdir = "/tmp/{}".format(env_cls.__name__)
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+
+    if seed is not None:
+        env.seed(seed)
+
+    obs, _ = env.reset()
+
+    if seed is not None:
+        env.action_space.seed(seed)
+
+    with CPUTimer() as timer:
+        for t in range(max_num_steps):
+            action = env.action_space.sample(obs)
+            obs, reward, done, _ = env.step(action)
+            # env.render()
+            if done:
+                obs, _ = env.reset()
+
+    if verbose:
+        print("FPS:", max_num_steps / timer.duration)
+        print()
+
+    env.close()
+
+
 class VideoWrapper(gym.Wrapper):
     def __init__(self, env, out_path, fps=30, size=None):
         super().__init__(env)
@@ -241,6 +272,19 @@ class VideoWrapper(gym.Wrapper):
     def _finish_video(self):
         imageio.mimsave(self.out_path, self.images, fps=self.fps)
         print("Wrote out video to {}".format(self.out_path))
+
+
+class CPUTimer:
+    def __enter__(self):
+        self.start = time.time()
+        self.end = self.start
+        self.duration = 0.0
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is None:
+            self.end = time.time()
+            self.duration = self.end - self.start
 
 
 class DummyFile:
