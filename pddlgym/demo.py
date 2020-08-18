@@ -1,5 +1,5 @@
 from pddlgym.utils import run_random_agent_demo, run_planning_demo, \
-    run_probabilistic_planning_demo
+    run_probabilistic_planning_demo, run_fps_benchmark
 
 import gym
 import pddlgym
@@ -9,6 +9,14 @@ def demo_random(env_name, render=True, problem_index=0, verbose=True):
     if not render: env._render = None
     env.fix_problem_index(problem_index)
     run_random_agent_demo(env, verbose=verbose, seed=0)
+
+def benchmark_random(env_name, render=False, problem_index=0, verbose=True):
+    if verbose:
+        print("Env:", env_name)
+    env = gym.make("PDDLEnv{}-v0".format(env_name.capitalize()))
+    if not render: env._render = None
+    env.fix_problem_index(problem_index)
+    run_fps_benchmark(env, verbose=verbose, seed=0)
 
 def demo_ff_planning(env_name, num_problems, render=True, test=False, verbose=True):
     gym_name = env_name.capitalize()
@@ -101,12 +109,33 @@ def run_all(render=True, verbose=True):
     # demo_ff_planning("glibrearrangement", 100, render=render, verbose=verbose, test=True)
     # demo_ff_planning("glibdoors", 5, render=render, verbose=verbose)
     # demo_ff_planning("glibdoors", 10, render=render, verbose=verbose, test=True)
-    demo_random("rubiks", render=render, problem_index=0, verbose=verbose)
-    demo_random("rubiks", render=render, problem_index=1, verbose=verbose)
-    demo_random("rubiks", render=render, problem_index=2, verbose=verbose)
 
+    # benchmark_random("blocks", render=render, verbose=verbose)
+    # benchmark_random("conditionalblocks", render=render, verbose=verbose)
+    # benchmark_random("conditionalferry", render=render, verbose=verbose)
+    # benchmark_random("depot", problem_index=1, render=render, verbose=verbose)
+    # benchmark_random("doors", render=render, verbose=verbose)
+    # benchmark_random("easyblocks", render=render, verbose=verbose)
+    # benchmark_random("easygripper", render=render, verbose=verbose)
+    # benchmark_random("elevator", problem_index=1, render=render, verbose=verbose)
+    # benchmark_random("ferry", render=render, verbose=verbose)
+    # benchmark_random("glibdoors", render=render, verbose=verbose)
+    # benchmark_random("glibrearrangement", problem_index=1, render=render, verbose=verbose)
+    # benchmark_random("gripper", problem_index=1, render=render, verbose=verbose)
+    benchmark_random("hanoi_operator_actions", problem_index=4, render=render, verbose=verbose)
+    # benchmark_random("hanoi", render=render, verbose=verbose)
+    # benchmark_random("lifelong_tiny_gripper", render=render, verbose=verbose)
+    # benchmark_random("meetpass", render=render, verbose=verbose)
+    # benchmark_random("minecraft", problem_index=1, render=render, verbose=verbose)
+    # benchmark_random("rubiks", render=render, verbose=verbose)
+    # benchmark_random("slidetile", render=render, verbose=verbose)
+    # benchmark_random("sokoban", render=render, verbose=verbose)
+    # benchmark_random("travel", render=render, verbose=verbose)
+    # benchmark_random("tsp", render=render, verbose=verbose)
 
+    # demo_random("hanoi_operator_actions", problem_index=1, render=render, verbose=verbose)
+    # demo_random("hanoi", problem_index=1, render=render, verbose=verbose)
 
 
 if __name__ == '__main__':
-    run_all(verbose=False, render=True)
+    run_all(verbose=True, render=True)
