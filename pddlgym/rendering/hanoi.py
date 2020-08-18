@@ -89,7 +89,7 @@ def draw_pegs(ax, peg_width, peg_height, peg_to_hor_midpoints, height):
     for midx in peg_to_hor_midpoints.values():
         x = midx - peg_width / 2
         y = 0
-        rect = patches.Rectangle((x,y), peg_width, peg_height, 
+        rect = patches.Rectangle((x,y), peg_width, peg_height,
             linewidth=1, edgecolor=(0.2,0.2,0.2), facecolor=(0.5,0.5,0.5))
         ax.add_patch(rect)
 
@@ -98,7 +98,7 @@ def draw_discs(ax, disc_height, disc_midpoints, disc_widths):
         disc_width = disc_widths[disc]
         x = midx - disc_width / 2
         y = midy - disc_height / 2
-        rect = patches.Rectangle((x,y), disc_width, disc_height, 
+        rect = patches.Rectangle((x,y), disc_width, disc_height,
             linewidth=1, edgecolor=(0.2,0.2,0.2), facecolor=(0.8,0.1,0.1))
         ax.add_patch(rect)
 
@@ -116,10 +116,11 @@ def render(obs, mode='human', close=False):
 
     pegs, discs_ordered_by_size, peg_to_disc_list = get_objects_from_obs(obs)
     peg_width, peg_height, peg_to_hor_midpoints = get_peg_params(pegs, width, height)
-    disc_height, disc_midpoints, disc_widths = get_disc_params(discs_ordered_by_size, 
+    disc_height, disc_midpoints, disc_widths = get_disc_params(discs_ordered_by_size,
         peg_to_disc_list, peg_to_hor_midpoints, width, peg_height)
 
     draw_pegs(ax, peg_width, peg_height, peg_to_hor_midpoints, height)
     draw_discs(ax, disc_height, disc_midpoints, disc_widths)
-
-    return fig2data(fig)
+    data = fig2data(fig)
+    plt.close(fig)
+    return data
