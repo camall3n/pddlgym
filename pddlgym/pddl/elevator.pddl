@@ -16,11 +16,10 @@
 	(above ?v0 - floor ?v1 - floor)
   )
 
-  ; (:actions down up board depart)
 
-  
 
-	(:action down
+
+	(:action do_down
 		:parameters (?f1 - floor ?f2 - floor)
 		:precondition (and (above ?f2 ?f1)
 			(down ?f2)
@@ -29,9 +28,9 @@
 			(lift-at ?f2)
 			(not (lift-at ?f1)))
 	)
-	
 
-	(:action board
+
+	(:action do_board
 		:parameters (?f - floor ?p - passenger)
 		:precondition (and (board ?f ?p)
 			(lift-at ?f)
@@ -39,9 +38,9 @@
 		:effect (and
 			(boarded ?p))
 	)
-	
 
-	(:action up
+
+	(:action do_up
 		:parameters (?f1 - floor ?f2 - floor)
 		:precondition (and (above ?f1 ?f2)
 			(lift-at ?f1)
@@ -50,9 +49,9 @@
 			(lift-at ?f2)
 			(not (lift-at ?f1)))
 	)
-	
 
-	(:action depart
+
+	(:action do_depart
 		:parameters (?f - floor ?p - passenger)
 		:precondition (and (boarded ?p)
 			(depart ?f ?p)
@@ -64,4 +63,3 @@
 	)
 
 )
-        
