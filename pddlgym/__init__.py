@@ -19,12 +19,15 @@ def register_pddl_env(name, is_test_env, other_args):
         problem_dirname += '_test'
     problem_dir = os.path.join(dir_path, problem_dirname)
 
-    register(
-        id='PDDLEnv{}-v0'.format(gym_name),
-        entry_point='pddlgym.core:PDDLEnv',
-        kwargs=dict({'domain_file' : domain_file, 'problem_dir' : problem_dir,
-                     **other_args}),
-    )
+    try:
+        register(
+            id='PDDLEnv{}-v0'.format(gym_name),
+            entry_point='pddlgym.core:PDDLEnv',
+            kwargs=dict({'domain_file' : domain_file, 'problem_dir' : problem_dir,
+                        **other_args}),
+        )
+    except ValueError:
+        pass
 
 for env_name, kwargs in [
         ("gripper", {'operators_as_actions' : True,
