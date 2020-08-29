@@ -15,7 +15,7 @@
 
 
 
-	(:action move
+	(:action do_move
 		:parameters (?p - thing ?from - location ?to - location ?dir - direction)
 		:precondition (and (move ?dir)
 			(is-player ?p)
@@ -30,7 +30,7 @@
 	)
 
 
-	(:action push-to-goal
+	(:action do_push-to-goal
 		:parameters (?p - thing ?s - thing ?ppos - location ?from - location ?to - location ?dir - direction)
 		:precondition (and (move ?dir)
 			(is-player ?p)
@@ -52,7 +52,7 @@
 	)
 
 
-	(:action push-to-nongoal
+	(:action do_push-to-nongoal
 		:parameters (?p - thing ?s - thing ?ppos - location ?from - location ?to - location ?dir - direction)
 		:precondition (and (move ?dir)
 			(is-player ?p)
