@@ -15,11 +15,10 @@
 	(at ?v0 - obj ?v1 - obj)
   )
 
-  ; (:actions board sail debark)
 
-  
 
-	(:action board
+
+	(:action do_board
 		:parameters (?car - obj ?loc - obj ?ferry - ferry)
 		:precondition (and (at ?car ?loc)
 			(at-ferry ?loc)
@@ -33,9 +32,9 @@
 			(not (empty-ferry ?ferry))
 			(full-ferry ?ferry))
 	)
-	
 
-	(:action sail
+
+	(:action do_sail
 		:parameters (?from - obj ?to - obj)
 		:precondition (and (at-ferry ?from)
 			(location ?from)
@@ -46,9 +45,9 @@
 			(at-ferry ?to)
 			(not (at-ferry ?from)))
 	)
-	
 
-	(:action debark
+
+	(:action do_debark
 		:parameters (?car - obj ?loc - obj ?ferry - ferry)
 		:precondition (and (at-ferry ?loc)
 			(car ?car)
@@ -64,4 +63,3 @@
 	)
 
 )
-        
