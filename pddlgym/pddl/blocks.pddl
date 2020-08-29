@@ -18,8 +18,6 @@
         (unstack ?x - block)
     )
 
-    ; (:actions pickup putdown stack unstack)
-
     (:action pick-up
         :parameters (?x - block ?robot - robot)
         :precondition (and
