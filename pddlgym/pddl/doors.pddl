@@ -11,9 +11,7 @@
      (pick ?key - key)
   )
 
-  ; (:actions moveto pick)
-
-  (:action moveto
+  (:action do_moveto
     :parameters (?sloc - location ?eloc - location ?eroom - room)
     :precondition (and (moveto ?eloc)
                        (at ?sloc)
@@ -25,7 +23,7 @@
             )
   )
 
-  (:action pick
+  (:action do_pick
     :parameters (?loc - location ?key - key ?room - room)
     :precondition (and (pick ?key)
                        (at ?loc)
