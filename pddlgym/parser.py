@@ -497,8 +497,8 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
             op_name = op_name.strip()
             params = params.strip()[1:-1].split("?")
             if self.uses_typing:
-                params = [(param.strip().split("-")[0].strip(),
-                           param.strip().split("-")[1].strip())
+                params = [(param.strip().split(" - ")[0].strip(),
+                           param.strip().split(" - ")[1].strip())
                           for param in params[1:]]
                 params = [self.types[v]("?"+k) for k, v in params]
             else:
