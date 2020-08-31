@@ -468,19 +468,24 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
         predicates = self._find_all_balanced_expressions(predicates)
         self.predicates = {}
         for pred in predicates:
+            if ' - ' in pred:
+                assert self.uses_typing
+            else:
+                assert not self.uses_typing
             pred = pred.strip()[1:-1].split("?")
             pred_name = pred[0].strip()
-            # arg_types = [self.types[arg.strip().split("-")[1].strip()]
-            #              for arg in pred[1:]]
+
             arg_types = []
+            n_same_type_args = 0
             for arg in pred[1:]:
-                if ' - ' in arg:
-                    assert arg_types is not None, "Mixing of typed and untyped args not allowed"
-                    assert self.uses_typing
-                    arg_type = self.types[arg.strip().split("-")[1].strip()]
-                    arg_types.append(arg_type)
+                if self.uses_typing:
+                    n_same_type_args += 1
+                    if ' - ' in arg:
+                        arg_type = self.types[arg.strip().split(" - ")[1].strip()]
+                        for _ in range(n_same_type_args):
+                            arg_types.append(arg_type)
+                        n_same_type_args = 0
                 else:
-                    assert not self.uses_typing
                     arg_types.append(self.types["default"])
             self.predicates[pred_name] = Predicate(
                 pred_name, len(pred[1:]), arg_types)
