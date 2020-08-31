@@ -1,6 +1,6 @@
 """PDDL parsing.
 """
-from pddlgym.structs import (Type, Predicate, LiteralConjunction, LiteralDisjunction,
+from pddlgym.structs import (Type, Predicate, Literal, LiteralConjunction, LiteralDisjunction,
                              Not, Anti, ForAll, Exists, ProbabilisticEffect,
                              TypedEntity, ground_literal)
 
