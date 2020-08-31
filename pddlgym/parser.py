@@ -173,6 +173,8 @@ class PDDLParser:
                 return Anti(self._parse_into_literal(clause, params, is_effect=is_effect))
             else:
                 return Not(self._parse_into_literal(clause, params, is_effect=is_effect))
+        if string == '()' or string == '(and)':
+            return LiteralConjunction([])
         string = string[1:-1].split()
         pred, args = string[0], string[1:]
         typed_args = []
