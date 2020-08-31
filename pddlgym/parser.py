@@ -521,6 +521,8 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
                 preconds = LiteralConjunction([preconds])
             effects = self._parse_into_literal(effects.strip(), params,
                 is_effect=True)
+            if self.operators_as_actions and isinstance(effects, Literal):
+                effects = LiteralConjunction([effects])
             self.operators[op_name] = Operator(
                 op_name, params, preconds, effects)
 
