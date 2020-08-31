@@ -368,7 +368,7 @@ class PDDLDomain:
     def write(self, fname):
         """Write the domain PDDL string to a file.
         """
-        predicates = "\n\t".join([lit.pddl_str() for lit in self.predicates.values()])
+        predicates = "\n\t".join([lit.pddl_str() for lit in self.predicates.values() if lit.name != "="])
         operators = "\n\t".join([op.pddl_str() for op in self.operators.values()])
         requirements = ":typing"
         if "=" in self.predicates:

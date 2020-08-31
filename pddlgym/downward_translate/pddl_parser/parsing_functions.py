@@ -426,7 +426,7 @@ def parse_task_pddl(task_pddl, type_dict, predicate_dict):
     initial_false = set()
     initial_assignments = dict()
     for fact in init[1:]:
-        if fact[0] == "=":
+        if fact[0] == "=" and len(fact) == 3 and fact[1] != fact[2]:
             try:
                 assignment = parse_assignment(fact)
             except ValueError as e:
