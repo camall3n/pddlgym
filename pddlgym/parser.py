@@ -501,11 +501,18 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
             op_name, params, preconds, effects = op_match.groups()
             op_name = op_name.strip()
             params = params.strip()[1:-1].split("?")
+            same_type_args = []
             if self.uses_typing:
-                params = [(param.strip().split(" - ")[0].strip(),
-                           param.strip().split(" - ")[1].strip())
-                          for param in params[1:]]
-                params = [self.types[v]("?"+k) for k, v in params]
+                param_tuples = []
+                for arg in params[1:]:
+                    arg_name = arg.strip().split(' - ')[0].strip()
+                    same_type_args.append(arg_name)
+                    if ' - ' in arg:
+                        arg_type = arg.strip().split(" - ")[1].strip()
+                        for param_name in same_type_args:
+                            param_tuples.append((param_name, arg_type))
+                        same_type_args = []
+                params = [self.types[v]("?"+k) for k, v in param_tuples]
             else:
                 params = [param.strip() for param in params[1:]]
                 params = [self.types["default"]("?"+k) for k in params]
