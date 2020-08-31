@@ -101,7 +101,7 @@ class PDDLParser:
         assert string[-1] == ")"
         if string.startswith("(and") and string[4] in (" ", "\n", "("):
             clauses = self._find_all_balanced_expressions(string[4:-1].strip())
-            return LiteralConjunction([self._parse_into_literal(clause, params, 
+            return LiteralConjunction([self._parse_into_literal(clause, params,
                                        is_effect=is_effect) for clause in clauses])
         if string.startswith("(or") and string[3] in (" ", "\n", "("):
             clauses = self._find_all_balanced_expressions(string[3:-1].strip())
@@ -138,7 +138,7 @@ class PDDLParser:
                 # Handle existential goal with no arguments.
                 body = self._parse_into_literal(clause, params, is_effect=is_effect)
                 return body
-            variables = self.parse_objects(new_binding[1:-1], self.types, 
+            variables = self.parse_objects(new_binding[1:-1], self.types,
                 uses_typing=self.uses_typing)
             if isinstance(params, list):
                 for v in variables:
@@ -307,7 +307,7 @@ class PDDLParser:
 class PDDLDomain:
     """A PDDL domain.
     """
-    def __init__(self, domain_name=None, types=None, type_hierarchy=None, predicates=None, 
+    def __init__(self, domain_name=None, types=None, type_hierarchy=None, predicates=None,
                  operators=None, actions=None, operators_as_actions=False, is_probabilistic=False):
         # String of domain name.
         self.domain_name = domain_name
@@ -513,7 +513,7 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
         if constants == "":
             self.constants = []
         else:
-            self.constants = PDDLProblemParser.parse_objects(constants, self.types, 
+            self.constants = PDDLProblemParser.parse_objects(constants, self.types,
                 uses_typing=self.uses_typing)
 
     def _parse_domain_predicates(self):
@@ -523,19 +523,24 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
         predicates = self._find_all_balanced_expressions(predicates)
         self.predicates = {}
         for pred in predicates:
+            if ' - ' in pred:
+                assert self.uses_typing
+            else:
+                assert not self.uses_typing
             pred = pred.strip()[1:-1].split("?")
             pred_name = pred[0].strip()
-            # arg_types = [self.types[arg.strip().split("-")[1].strip()]
-            #              for arg in pred[1:]]
+
             arg_types = []
+            n_same_type_args = 0
             for arg in pred[1:]:
-                if ' - ' in arg:
-                    assert arg_types is not None, "Mixing of typed and untyped args not allowed"
-                    assert self.uses_typing
-                    arg_type = self.types[arg.strip().split("-", 1)[1].strip()]
-                    arg_types.append(arg_type)
+                if self.uses_typing:
+                    n_same_type_args += 1
+                    if ' - ' in arg:
+                        arg_type = self.types[arg.strip().split(" - ")[1].strip()]
+                        for _ in range(n_same_type_args):
+                            arg_types.append(arg_type)
+                        n_same_type_args = 0
                 else:
-                    assert not self.uses_typing
                     arg_types.append(self.types["default"])
             self.predicates[pred_name] = Predicate(
                 pred_name, len(pred[1:]), arg_types)
@@ -555,13 +560,8 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
             op_name = op_name.strip()
             params = params.strip()[1:-1].split("?")
             if self.uses_typing:
-<<<<<<< HEAD
-                params = [(param.strip().split("-", 1)[0].strip(),
-                           param.strip().split("-", 1)[1].strip())
-=======
                 params = [(param.strip().split(" - ")[0].strip(),
                            param.strip().split(" - ")[1].strip())
->>>>>>> fde6712... [BUGFIX] Improve parsing of dynamic action domains when '-' is in param names
                           for param in params[1:]]
                 params = [self.types[v]("?"+k) for k, v in params]
             else:
@@ -622,7 +622,7 @@ class PDDLProblemParser(PDDLParser):
         if objects == "":
             self.objects = []
         else:
-            self.objects = self.parse_objects(objects, self.types, 
+            self.objects = self.parse_objects(objects, self.types,
                 uses_typing=self.uses_typing)
         # Add constants to objects
         self.objects += self.constants
