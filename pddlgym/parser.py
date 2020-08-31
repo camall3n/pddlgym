@@ -61,7 +61,7 @@ class Operator:
         precond_strs = []
         for term in preconds.literals:
             params = set(map(str, term.variables))
-            if term.negated_as_failure:
+            if hasattr(term, 'negated_as_failure') and term.negated_as_failure:
                 # Negative term. The variables to universally
                 # quantify over are those which we have not
                 # encountered yet in this clause.
@@ -107,17 +107,29 @@ class PDDLParser:
             clauses = self._find_all_balanced_expressions(string[3:-1].strip())
             return LiteralDisjunction([self._parse_into_literal(clause, params,
                                        is_effect=is_effect) for clause in clauses])
+        if string.startswith("(imply") and string[6] in (" ", "\n", "("):
+            clauses = self._find_all_balanced_expressions(string[6:-1].strip())
+            assert len(clauses) == 2
+            assert not is_effect, "Imply is only allowed in preconditions"
+            premise = self._parse_into_literal(clauses[0], params, is_effect=is_effect)
+            implic = self._parse_into_literal(clauses[1], params, is_effect=is_effect)
+            return LiteralDisjunction([Not(premise), implic])
         if string.startswith("(forall") and string[7] in (" ", "\n", "("):
             new_binding, clause = self._find_all_balanced_expressions(
                 string[7:-1].strip())
-            new_name, new_type_name = new_binding.strip()[1:-1].split("-")
+            new_name, new_type_name = new_binding.strip()[1:-1].split("-", 1)
             new_name = new_name.strip()
             new_type_name = new_type_name.strip()
             assert new_name not in params, "ForAll variable {} already exists".format(new_name)
-            params[new_name] = self.types[new_type_name]
-            result = ForAll(self._parse_into_literal(clause, params, is_effect=is_effect),
-                            TypedEntity(new_name, params[new_name]))
-            del params[new_name]
+            new_entity_type = self.types[new_type_name]
+            new_entity = TypedEntity(new_name, new_entity_type)
+            if isinstance(params, list):
+                new_params = params + [new_entity]
+            else:
+                new_params = params.copy()
+                new_params[new_name] = self.types[new_type_name]
+            result = ForAll(self._parse_into_literal(clause, new_params, is_effect=is_effect),
+                            new_entity)
             return result
         if string.startswith("(exists") and string[7] in (" ", "\n", "("):
             new_binding, clause = self._find_all_balanced_expressions(
@@ -126,13 +138,22 @@ class PDDLParser:
                 # Handle existential goal with no arguments.
                 body = self._parse_into_literal(clause, params, is_effect=is_effect)
                 return body
-            variables = self._parse_objects(new_binding[1:-1])
-            for v in variables:
-                params[v.name] = v.var_type
+            variables = self.parse_objects(new_binding[1:-1], self.types, 
+                uses_typing=self.uses_typing)
+            if isinstance(params, list):
+                for v in variables:
+                    params.append(v.var_type(v.name))
+            else:
+                for v in variables:
+                    params[v.name] = v.var_type
             body = self._parse_into_literal(clause, params, is_effect=is_effect)
             result = Exists(variables, body)
-            for v in variables:
-                del params[v.name]
+            if isinstance(params, list):
+                for v in variables:
+                    params.remove(v)
+            else:
+                for v in variables:
+                    del params[v.name]
             return result
         if string.startswith("(probabilistic") and string[14] in (" ", "\n", "("):
             assert is_effect, "We only support probabilistic effects"
@@ -169,17 +190,29 @@ class PDDLParser:
             typed_args.append(typed_arg)
         return self.predicates[pred](*typed_args)
 
-    def _parse_objects(self, objects):
-        if self.uses_typing:
-            # Assume typed objects are new-line separated.
-            objects = objects.split("\n")
+    @staticmethod
+    def parse_objects(objects, types, uses_typing=False):
+        if uses_typing:
+            split_objects = []
+            remaining_str = objects
+            while True:
+                try:
+                    obj, remaining_str = re.split(r"\s-\s|\n-\s", remaining_str, 1)
+                except ValueError:
+                    break
+                if " " in remaining_str:
+                    object_type, remaining_str = re.split(r"[\s]+|[\n]+", remaining_str, 1)
+                else:
+                    object_type = remaining_str
+                    remaining_str = ""
+                split_objects.append(obj + " - " + object_type)
+            objects = split_objects
         else:
-            # Untyped objects can be separated by any form of whitespace.
             objects = objects.split()
         obj_names = []
         obj_type_names = []
         for obj in objects:
-            if self.uses_typing:
+            if uses_typing:
                 obj_name, obj_type_name = obj.strip().split(" - ")
                 obj_name = obj_name.strip()
                 obj_type_name = obj_type_name.strip()
@@ -201,16 +234,18 @@ class PDDLParser:
                 obj_type_names.append(obj_type_name)
         to_return = set()
         for obj_name, obj_type_name in zip(obj_names, obj_type_names):
-            if obj_type_name not in self.types:
+            if obj_type_name not in types:
                 print("Warning: type not declared for object {}, type {}".format(
                     obj_name, obj_type_name))
                 obj_type = Type(obj_type_name)
             else:
-                obj_type = self.types[obj_type_name]
+                obj_type = types[obj_type_name]
             to_return.add(TypedEntity(obj_name, obj_type))
         return sorted(to_return)
 
     def _purge_comments(self, pddl_str):
+        # Remove commas
+        pddl_str = pddl_str.replace(",", "")
         # Purge comments from the given string.
         while True:
             match = re.search(r";(.*)\n", pddl_str)
@@ -335,10 +370,13 @@ class PDDLDomain:
         """
         predicates = "\n\t".join([lit.pddl_str() for lit in self.predicates.values()])
         operators = "\n\t".join([op.pddl_str() for op in self.operators.values()])
+        requirements = ":typing"
+        if "=" in self.predicates:
+            requirements += " :equality"
 
         domain_str = """
 (define (domain {})
-  (:requirements :typing )
+  (:requirements {})
   (:types {})
   (:predicates {}
   )
@@ -348,7 +386,7 @@ class PDDLDomain:
   {}
 
 )
-        """.format(self.domain_name, self._types_pddl_str(),
+        """.format(self.domain_name, requirements, self._types_pddl_str(),
             predicates, " ".join(map(str, self.actions)), operators)
 
         with open(fname, 'w') as f:
@@ -417,6 +455,7 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
         self.domain_name = re.search(patt, self.domain).groups()[0].strip()
         self._parse_domain_types()
         self._parse_domain_predicates()
+        self._parse_constants()
         self._parse_domain_operators()
 
     def _parse_domain_types(self):
@@ -457,9 +496,25 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
                         self.types[new_type] = Type(new_type)
                 # Add to hierarchy
                 super_type = self.types[super_type_name]
-                self.type_hierarchy[super_type] = { self.types[t] for t in sub_type_names} 
+                if super_type in self.type_hierarchy:
+                    self.type_hierarchy[super_type].update({self.types[t] for t in sub_type_names})
+                else:
+                    self.type_hierarchy[super_type] = {self.types[t] for t in sub_type_names}
                 remaining_type_str = remaining_type_str[super_end_index:]
             assert len(remaining_type_str.strip()) == 0, "Cannot mix hierarchical and non-hierarchical types"
+
+    def _parse_constants(self):
+        if ":constants" not in self.domain:
+            self.constants = []
+            return
+        start_ind = re.search(r"\(:constants", self.domain).start()
+        constants = self._find_balanced_expression(self.domain, start_ind)
+        constants = constants[11:-1].strip()
+        if constants == "":
+            self.constants = []
+        else:
+            self.constants = PDDLProblemParser.parse_objects(constants, self.types, 
+                uses_typing=self.uses_typing)
 
     def _parse_domain_predicates(self):
         start_ind = re.search(r"\(:predicates", self.domain).start()
@@ -477,13 +532,16 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
                 if ' - ' in arg:
                     assert arg_types is not None, "Mixing of typed and untyped args not allowed"
                     assert self.uses_typing
-                    arg_type = self.types[arg.strip().split("-")[1].strip()]
+                    arg_type = self.types[arg.strip().split("-", 1)[1].strip()]
                     arg_types.append(arg_type)
                 else:
                     assert not self.uses_typing
                     arg_types.append(self.types["default"])
             self.predicates[pred_name] = Predicate(
                 pred_name, len(pred[1:]), arg_types)
+        # Handle equality
+        if "=" in self.domain:
+            self.predicates["="] = Predicate("=", 2)
 
     def _parse_domain_operators(self):
         matches = re.finditer(r"\(:action", self.domain)
@@ -497,13 +555,15 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
             op_name = op_name.strip()
             params = params.strip()[1:-1].split("?")
             if self.uses_typing:
-                params = [(param.strip().split("-")[0].strip(),
-                           param.strip().split("-")[1].strip())
+                params = [(param.strip().split("-", 1)[0].strip(),
+                           param.strip().split("-", 1)[1].strip())
                           for param in params[1:]]
                 params = [self.types[v]("?"+k) for k, v in params]
             else:
                 params = [param.strip() for param in params[1:]]
                 params = [self.types["default"]("?"+k) for k in params]
+            # Always add constants
+            params += self.constants
             preconds = self._parse_into_literal(preconds.strip(), params)
             effects = self._parse_into_literal(effects.strip(), params,
                 is_effect=True)
@@ -514,13 +574,14 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
 class PDDLProblemParser(PDDLParser):
     """PDDL problem parsing class.
     """
-    def __init__(self, problem_fname, domain_name, types, predicates, action_names):
+    def __init__(self, problem_fname, domain_name, types, predicates, action_names, constants=None):
         self.problem_fname = problem_fname
         self.domain_name = domain_name
         self.types = types
         self.predicates = predicates
         self.action_names = action_names
         self.uses_typing = not ("default" in self.types)
+        self.constants = constants or []
 
         self.problem_name = None
         # Set of objects, each is a structs.TypedEntity object.
@@ -556,7 +617,10 @@ class PDDLProblemParser(PDDLParser):
         if objects == "":
             self.objects = []
         else:
-            self.objects = self._parse_objects(objects)
+            self.objects = self.parse_objects(objects, self.types, 
+                uses_typing=self.uses_typing)
+        # Add constants to objects
+        self.objects += self.constants
 
     def _parse_problem_initial_state(self):
         start_ind = re.search(r"\(:init", self.problem).start()
@@ -569,6 +633,11 @@ class PDDLProblemParser(PDDLParser):
             if lit.predicate.name in self.action_names:
                 continue
             initial_lits.add(lit)
+        # Handle equality
+        if "=" in self.predicates:
+            eq = self.predicates["="]
+            for obj in self.objects:
+                initial_lits.add(eq(obj, obj))
         self.initial_state = frozenset(initial_lits)
 
     def _parse_problem_goal(self):
