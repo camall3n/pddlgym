@@ -238,13 +238,17 @@ class PDDLEnv(gym.Env):
         domain : PDDLDomainParser
         problems : [ PDDLProblemParser ]
         """
-        domain = PDDLDomainParser(domain_file, 
+        domain = PDDLDomainParser(domain_file,
             expect_action_preds=(not operators_as_actions),
             operators_as_actions=operators_as_actions)
         problems = []
-        problem_files = [f for f in glob.glob(os.path.join(problem_dir, "*.pddl"))]
+        if 'ipc-strips' in problem_dir:
+            glob_str = 'problem*.pddl'
+        else:
+            glob_str = '*.pddl'
+        problem_files = [f for f in glob.glob(os.path.join(problem_dir, glob_str))]
         for problem_file in sorted(problem_files):
-            problem = PDDLProblemParser(problem_file, domain.domain_name, 
+            problem = PDDLProblemParser(problem_file, domain.domain_name,
                 domain.types, domain.predicates, domain.actions, domain.constants)
             problems.append(problem)
         return domain, problems
@@ -373,7 +377,7 @@ class PDDLEnv(gym.Env):
                 conds = [action.predicate(*operator.params)] + conds
             # Check whether action is in the preconditions
             action_literal = None
-            for lit in conds: 
+            for lit in conds:
                 if lit.predicate == action.predicate:
                     action_literal = lit
                     break
@@ -400,7 +404,7 @@ class PDDLEnv(gym.Env):
         """
         Execute an action and update the state.
 
-        Tries to find a ground operator for which the 
+        Tries to find a ground operator for which the
         preconditions hold when this action is taken. If none
         exist, optionally raises InvalidAction. If multiple
         exist, raises an AssertionError, since we assume
