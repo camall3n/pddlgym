@@ -577,6 +577,8 @@ class PDDLDomainParser(PDDLParser, PDDLDomain):
             # Always add constants
             params += self.constants
             preconds = self._parse_into_literal(preconds.strip(), params)
+            if self.operators_as_actions and isinstance(preconds, Literal):
+                preconds = LiteralConjunction([preconds])
             effects = self._parse_into_literal(effects.strip(), params,
                 is_effect=True)
             self.operators[op_name] = Operator(
