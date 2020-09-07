@@ -1,7 +1,6 @@
-
 (define (problem mixed-f20-p10-u0-v0-g0-a0-n0-a0-b0-n0-f0-r0) (:domain miconic)
   (:objects
-        f0 - floor
+    f0 - floor
 	f1 - floor
 	f10 - floor
 	f11 - floor
@@ -32,18 +31,7 @@
 	p8 - passenger
 	p9 - passenger
   )
-  (:goal (and
-	(served p0)
-	(served p1)
-	(served p2)
-	(served p3)
-	(served p4)
-	(served p5)
-	(served p6)
-	(served p7)
-	(served p8)
-	(served p9)))
-  (:init 
+  (:init
 	(above f0 f10)
 	(above f0 f11)
 	(above f0 f12)
@@ -694,6 +682,16 @@
 	(up f6)
 	(up f7)
 	(up f8)
-	(up f9)
+	(up f9))
+  (:goal (and
+	(served p0)
+	(served p1)
+	(served p2)
+	(served p3)
+	(served p4)
+	(served p5)
+	(served p6)
+	(served p7)
+	(served p8)
+	(served p9))
 ))
-        
