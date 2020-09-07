@@ -22,16 +22,6 @@
 	l8 - obj
 	l9 - obj
   )
-  (:goal (and
-	(at c0 l1)
-	(at c1 l7)
-	(at c2 l9)
-	(at c3 l8)
-	(at c4 l0)
-	(at c5 l8)
-	(at c6 l9)
-	(at c7 l8)
-	(at c8 l2)))
   (:init 
 	(at c0 l8)
 	(at c1 l9)
@@ -210,4 +200,15 @@
 	(sail l7)
 	(sail l8)
 	(sail l9)
-))
+  )
+  (:goal (and
+	(at c0 l1)
+	(at c1 l7)
+	(at c2 l9)
+	(at c3 l8)
+	(at c4 l0)
+	(at c5 l8)
+	(at c6 l9)
+	(at c7 l8)
+	(at c8 l2)))
+)

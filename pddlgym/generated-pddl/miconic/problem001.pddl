@@ -32,17 +32,6 @@
 	p8 - passenger
 	p9 - passenger
   )
-  (:goal (and
-	(served p0)
-	(served p1)
-	(served p2)
-	(served p3)
-	(served p4)
-	(served p5)
-	(served p6)
-	(served p7)
-	(served p8)
-	(served p9)))
   (:init 
 	(above f0 f10)
 	(above f0 f11)
@@ -701,4 +690,16 @@
 	(up f7)
 	(up f8)
 	(up f9)
-))
+  )
+  (:goal (and
+	(served p0)
+	(served p1)
+	(served p2)
+	(served p3)
+	(served p4)
+	(served p5)
+	(served p6)
+	(served p7)
+	(served p8)
+	(served p9)))
+)

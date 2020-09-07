@@ -75,8 +75,6 @@
 	room-3 - room
 	room-4 - room
   )
-  (:goal (and
-	(at loc-0-7)))
   (:init 
 	(at loc-7-1)
 	(keyat key-0 loc-0-3)
@@ -220,4 +218,7 @@
 	(pick key-2)
 	(pick key-3)
 	(unlocked room-0)
-))
+  )
+  (:goal (and
+	(at loc-0-7)))
+)

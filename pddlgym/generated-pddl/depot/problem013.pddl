@@ -21,13 +21,6 @@
 	truck0 - truck
 	truck1 - truck
   )
-  (:goal (and
-	(on crate0 crate4)
-	(on crate2 crate6)
-	(on crate4 crate7)
-	(on crate5 pallet2)
-	(on crate6 pallet1)
-	(on crate7 pallet0)))
   (:init 
 	(at crate0 depot0)
 	(at crate3 distributor1)
@@ -51,4 +44,12 @@
 	(on crate0 pallet0)
 	(on crate3 crate5)
 	(on crate5 pallet2)
-))
+  )
+  (:goal (and
+	(on crate0 crate4)
+	(on crate2 crate6)
+	(on crate4 crate7)
+	(on crate5 pallet2)
+	(on crate6 pallet1)
+	(on crate7 pallet0)))
+)
