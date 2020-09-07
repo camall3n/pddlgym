@@ -667,10 +667,14 @@ class PDDLProblemParser(PDDLParser):
 
     @staticmethod
     def pddl_string(objects, initial_state, problem_name, domain_name, goal,
-                    fast_downward_order=False):
+                    fast_downward_order=False, typed=True):
         """Get the problem PDDL string for a given state.
         """
-        objects_typed = "\n\t".join(list(sorted(map(lambda o: str(o).replace(":", " - "),
+        if typed:
+            objects = "\n\t".join(list(sorted(map(lambda o: str(o).replace(":", " - "),
+                                                    objects))))
+        else:
+            objects = "\n\t".join(list(sorted(map(lambda o: str(o).split(":")[0],
                                                     objects))))
         init_state = "\n\t".join([lit.pddl_str() for lit in sorted(initial_state)])
 
@@ -678,7 +682,7 @@ class PDDLProblemParser(PDDLParser):
         return problem_str.format(
             problem=problem_name,
             domain=domain_name,
-            objects=objects_typed,
+            objects=objects,
             init_state=init_state,
             goal=goal.pddl_str(),
         )
