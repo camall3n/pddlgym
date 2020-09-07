@@ -242,7 +242,7 @@ class PDDLEnv(gym.Env):
             expect_action_preds=(not operators_as_actions),
             operators_as_actions=operators_as_actions)
         problems = []
-        if 'ipc-strips' in problem_dir:
+        if 'ipc-strips' in problem_dir or 'generated-pddl' in problem_dir:
             glob_str = 'problem*.pddl'
         else:
             glob_str = '*.pddl'

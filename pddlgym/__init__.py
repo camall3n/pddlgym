@@ -46,6 +46,23 @@ def register_ipc_env(name, other_args):
         print(e)
         pass
 
+def register_generated_env(name, other_args):
+    dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "generated-pddl", name)
+    domain_file = os.path.join(dir_path, "domain.pddl".format(name.lower()))
+    gym_name = name.capitalize()
+    problem_dir = dir_path
+
+    try:
+        register(
+            id='PDDLEnv-Gen-{}-v0'.format(gym_name),
+            entry_point='pddlgym.core:PDDLEnv',
+            kwargs=dict({'domain_file' : domain_file, 'problem_dir' : problem_dir,
+                        **other_args}),
+        )
+    except ValueError as e:
+        print(e)
+        pass
+
 
 for env_name, kwargs in [
         ("gripper", {}),
@@ -108,3 +125,19 @@ for env_name in [
         "shape_reward_mode": None,
     }
     register_ipc_env(env_name, other_args)
+
+for env_name in [
+    'depot',
+    'doors',
+    'ferry',
+    'gripper',
+    'hanoi',
+    'miconic',
+]:
+    other_args = {
+        'operators_as_actions' : True,
+        'dynamic_action_space' : True,
+        "raise_error_on_invalid_action": False,
+        "shape_reward_mode": None,
+    }
+    register_generated_env(env_name, other_args)
