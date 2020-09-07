@@ -1,52 +1,52 @@
 
 (define (problem strips-gripper-x-20_35) (:domain gripper-strips)
   (:objects
-        ball1 - default
-	ball10 - default
-	ball11 - default
-	ball12 - default
-	ball13 - default
-	ball14 - default
-	ball15 - default
-	ball16 - default
-	ball17 - default
-	ball18 - default
-	ball19 - default
-	ball2 - default
-	ball20 - default
-	ball21 - default
-	ball22 - default
-	ball23 - default
-	ball24 - default
-	ball25 - default
-	ball26 - default
-	ball27 - default
-	ball28 - default
-	ball29 - default
-	ball3 - default
-	ball30 - default
-	ball31 - default
-	ball32 - default
-	ball33 - default
-	ball34 - default
-	ball35 - default
-	ball36 - default
-	ball37 - default
-	ball38 - default
-	ball39 - default
-	ball4 - default
-	ball40 - default
-	ball41 - default
-	ball42 - default
-	ball5 - default
-	ball6 - default
-	ball7 - default
-	ball8 - default
-	ball9 - default
-	left - default
-	right - default
-	rooma - default
-	roomb - default
+        ball1
+	ball10
+	ball11
+	ball12
+	ball13
+	ball14
+	ball15
+	ball16
+	ball17
+	ball18
+	ball19
+	ball2
+	ball20
+	ball21
+	ball22
+	ball23
+	ball24
+	ball25
+	ball26
+	ball27
+	ball28
+	ball29
+	ball3
+	ball30
+	ball31
+	ball32
+	ball33
+	ball34
+	ball35
+	ball36
+	ball37
+	ball38
+	ball39
+	ball4
+	ball40
+	ball41
+	ball42
+	ball5
+	ball6
+	ball7
+	ball8
+	ball9
+	left
+	right
+	rooma
+	roomb
   )
   (:init 
 	(at ball10 rooma)

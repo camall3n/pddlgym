@@ -1,19 +1,19 @@
 
 (define (problem hanoi-10_29) (:domain hanoi)
   (:objects
-        d1 - default
-	d10 - default
-	d2 - default
-	d3 - default
-	d4 - default
-	d5 - default
-	d6 - default
-	d7 - default
-	d8 - default
-	d9 - default
-	peg1 - default
-	peg2 - default
-	peg3 - default
+        d1
+	d10
+	d2
+	d3
+	d4
+	d5
+	d6
+	d7
+	d8
+	d9
+	peg1
+	peg2
+	peg3
   )
   (:init 
 	(clear d1)
