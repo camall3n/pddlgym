@@ -65,6 +65,35 @@
 
 
   (:action macro0000
+    :parameters (?var0000 - floor ?var0001 - passenger ?var0002 - floor)
+    :precondition (and (above ?var0000 ?var0002)
+      (board ?var0000 ?var0001)
+      (depart ?var0002 ?var0001)
+      (destin ?var0001 ?var0002)
+      (down ?var0000)
+      (lift-at ?var0000)
+      (origin ?var0001 ?var0000)
+      (up ?var0002))
+    :effect (and
+      (served ?var0001))
+  )
+
+  (:action macro0001
+    :parameters (?var0000 - floor ?var0001 - passenger ?var0002 - floor)
+    :precondition (and (above ?var0002 ?var0000)
+      (board ?var0002 ?var0001)
+      (boarded ?var0001)
+      (depart ?var0000 ?var0001)
+      (destin ?var0001 ?var0000)
+      (down ?var0002)
+      (lift-at ?var0000)
+      (origin ?var0001 ?var0002)
+      (up ?var0000))
+    :effect (and
+      (served ?var0001))
+  )
+
+  (:action macro0002
     :parameters (?var0000 - floor ?var0001 - floor ?var0002 - passenger)
     :precondition (and (above ?var0001 ?var0000)
       (board ?var0001 ?var0002)
@@ -76,7 +105,7 @@
       (boarded ?var0002))
   )
 
-  (:action macro0001
+  (:action macro0003
     :parameters (?var0000 - floor ?var0001 - floor ?var0002 - passenger)
     :precondition (and (above ?var0001 ?var0000)
       (boarded ?var0002)
@@ -90,7 +119,7 @@
       (served ?var0002))
   )
 
-  (:action macro0002
+  (:action macro0004
     :parameters (?var0000 - floor ?var0001 - floor ?var0002 - passenger)
     :precondition (and (above ?var0000 ?var0001)
       (board ?var0001 ?var0002)
@@ -102,71 +131,50 @@
       (boarded ?var0002))
   )
 
-  (:action macro0003
-    :parameters (?var0000 - floor ?var0001 - passenger ?var0002 - passenger)
-    :precondition (and (board ?var0000 ?var0001)
-      (boarded ?var0002)
-      (depart ?var0000 ?var0002)
-      (destin ?var0002 ?var0000)
-      (lift-at ?var0000)
-      (origin ?var0001 ?var0000))
-    :effect (and
-      (not (boarded ?var0002))
-      (boarded ?var0001)
-      (served ?var0002))
-  )
-
-  (:action macro0004
-    :parameters (?var0000 - floor ?var0001 - passenger ?var0002 - floor)
-    :precondition (and (above ?var0002 ?var0000)
-      (board ?var0000 ?var0001)
-      (down ?var0002)
-      (lift-at ?var0000)
-      (origin ?var0001 ?var0000))
-    :effect (and
-      (not (lift-at ?var0000))
-      (boarded ?var0001)
-      (lift-at ?var0002))
-  )
-
   (:action macro0005
     :parameters (?var0000 - floor ?var0001 - passenger ?var0002 - floor)
     :precondition (and (above ?var0000 ?var0002)
       (board ?var0000 ?var0001)
+      (depart ?var0002 ?var0001)
+      (destin ?var0001 ?var0002)
+      (down ?var0000)
       (lift-at ?var0000)
       (origin ?var0001 ?var0000)
       (up ?var0002))
     :effect (and
-      (not (lift-at ?var0000))
       (boarded ?var0001)
-      (lift-at ?var0002))
+      (served ?var0001))
   )
 
   (:action macro0006
-    :parameters (?var0000 - floor ?var0001 - floor ?var0002 - passenger)
+    :parameters (?var0000 - floor ?var0001 - floor ?var0002 - passenger ?var0003 - passenger)
     :precondition (and (above ?var0001 ?var0000)
+      (board ?var0000 ?var0003)
       (board ?var0001 ?var0002)
       (down ?var0001)
       (lift-at ?var0000)
-      (origin ?var0002 ?var0001))
+      (origin ?var0002 ?var0001)
+      (origin ?var0003 ?var0000)
+      (up ?var0000))
     :effect (and
-      (not (lift-at ?var0000))
       (boarded ?var0002)
-      (lift-at ?var0001))
+      (boarded ?var0003))
   )
 
   (:action macro0007
-    :parameters (?var0000 - floor ?var0001 - floor ?var0002 - passenger)
+    :parameters (?var0000 - floor ?var0001 - floor ?var0002 - passenger ?var0003 - passenger)
     :precondition (and (above ?var0001 ?var0000)
+      (board ?var0000 ?var0003)
       (boarded ?var0002)
       (depart ?var0001 ?var0002)
       (destin ?var0002 ?var0001)
       (down ?var0001)
-      (lift-at ?var0000))
+      (lift-at ?var0000)
+      (origin ?var0003 ?var0000)
+      (up ?var0000))
     :effect (and
       (not (boarded ?var0002))
-      (not (lift-at ?var0000))
-      (lift-at ?var0001)
+      (boarded ?var0003)
       (served ?var0002))
   )
 )
