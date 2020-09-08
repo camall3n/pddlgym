@@ -140,4 +140,6 @@ for env_name in [
         "raise_error_on_invalid_action": False,
         "shape_reward_mode": None,
     }
+    if env_name == 'hanoi':
+        other_args.update({'render': hanoi_render})
     register_generated_env(env_name, other_args)
